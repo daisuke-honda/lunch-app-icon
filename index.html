@@ -12,6 +12,7 @@
 <meta name="referrer" content="no-referrer">
 <title>給食注文</title>
 <meta name="apple-mobile-web-app-title" content="給食注文">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-512.png">
 <style>
@@ -28,7 +29,16 @@
   var a = /[#&]a=([A-Za-z0-9_-]+)/.exec(location.hash);
   var t = /[#&]t=([0-9a-f]+)/.exec(location.hash);
   if (a && t) {
-    location.replace("https://script.google.com/macros/s/" + a[1] + "/exec?t=" + t[1]);
+    var url = "https://script.google.com/macros/s/" + a[1] + "/exec?t=" + t[1];
+    if (navigator.standalone) {
+      // ホーム画面の図柄から開いたときは、すぐアプリへ
+      location.replace(url);
+    } else {
+      // Safari で開いたときは移らずに止まる(ここで「ホーム画面に追加」すると、お弁当箱の図柄で入る)
+      document.getElementById("msg").innerHTML =
+        "下の真ん中の共有ボタン(四角に上向きの矢印)→「ホーム画面に追加」→「追加」を押してください。<br><br>" +
+        '<a href="' + url + '" style="display:inline-block;padding:.8em 1.6em;background:#2e7d32;color:#fff;border-radius:8px;text-decoration:none">このままアプリを開く</a>';
+    }
   } else {
     document.getElementById("msg").textContent = "本人専用のリンクから開いてください。";
   }
