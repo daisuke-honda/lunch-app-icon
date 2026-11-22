@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+  給食注文アプリの入口(GitHub Pages の lunch-app-icon で公開)。
+  ホーム画面にお弁当箱の図柄を出すためだけのページで、開くとすぐ Apps Script のアプリへ移る。
+  アプリの URL・本人専用の合言葉はここには書かない。リンクの「#」の後ろ(サーバーに送られない部分)で受け取る。
+  元のファイルは (W)Lunch_order の app/icon/。直したら lunch-app-icon にも同じものを置く。
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>給食注文</title>
+<meta name="apple-mobile-web-app-title" content="給食注文">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-512.png">
+<style>
+  body { font-family: sans-serif; text-align: center; padding: 3em 1em; color: #333; }
+  img { width: 96px; height: 96px; border-radius: 20px; }
+</style>
+</head>
+<body>
+<img src="icon-180.png" alt="">
+<p id="msg">給食注文アプリを開いています…</p>
+<script>
+  // リンクの形:…/lunch-app-icon/#a=<デプロイ ID>&t=<本人の合言葉>
+  // アプリの URL もここには書かない(公開のページなので)。移る先は script.google.com だけに限る
+  var a = /[#&]a=([A-Za-z0-9_-]+)/.exec(location.hash);
+  var t = /[#&]t=([0-9a-f]+)/.exec(location.hash);
+  if (a && t) {
+    location.replace("https://script.google.com/macros/s/" + a[1] + "/exec?t=" + t[1]);
+  } else {
+    document.getElementById("msg").textContent = "本人専用のリンクから開いてください。";
+  }
+</script>
+</body>
+</html>
