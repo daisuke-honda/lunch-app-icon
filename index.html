@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   給食注文アプリの入口(GitHub Pages の lunch-app-icon で公開)。
-  ホーム画面にお弁当箱の図柄を出すためだけのページで、開くとすぐ Apps Script のアプリへ移る。
+  ホーム画面にお弁当箱の図柄を出すためのページ。ホーム画面から開くと、このページの中に Apps Script のアプリをはめ込んで表示する。
   アプリの URL・本人専用の合言葉はここには書かない。リンクの「#」の後ろ(サーバーに送られない部分)で受け取る。
   元のファイルは (W)Lunch_order の app/icon/。直したら lunch-app-icon にも同じものを置く。
 -->
@@ -18,6 +18,9 @@
 <style>
   body { font-family: sans-serif; text-align: center; padding: 3em 1em; color: #333; }
   img { width: 96px; height: 96px; border-radius: 20px; }
+  body.embed { margin: 0; padding: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+  body.embed iframe { flex: 1; width: 100%; border: 0; }
+  body.embed #fallback { font-size: 11px; color: #999; padding: 2px 0 calc(2px + env(safe-area-inset-bottom)); }
 </style>
 </head>
 <body>
@@ -30,9 +33,14 @@
   var t = /[#&]t=([0-9a-f]+)/.exec(location.hash);
   if (a && t) {
     var url = "https://script.google.com/macros/s/" + a[1] + "/exec?t=" + t[1];
-    if (navigator.standalone) {
-      // ホーム画面の図柄から開いたときは、すぐアプリへ
-      location.replace(url);
+    if (navigator.standalone || /[#&]embed=1/.test(location.hash)) {
+      // ホーム画面の図柄から開いたときは、このページの中にアプリをはめ込む(移らない)。
+      // script.google.com を直接開くと Google の「…作成されたものです」の帯とアドレスの帯が出るため(2026-11-22〜)
+      // embed=1 は PC で試すとき用
+      document.body.innerHTML =
+        '<iframe id="app" src="' + url + '" allow="clipboard-write"></iframe>' +
+        '<a id="fallback" href="' + url + '">開けないときはこちら</a>';
+      document.body.className = "embed";
     } else {
       // Safari で開いたときは移らずに止まる(ここで「ホーム画面に追加」すると、お弁当箱の図柄で入る)
       document.getElementById("msg").innerHTML =
